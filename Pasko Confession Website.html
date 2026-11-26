@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Boyfriend? 🎄💖</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka, Quicksand & Pacifico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti for celebratory burst -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --crimson: #be123c;
+      --crimson-dark: #881337;
+      --blush: #ffe4e6;
+      --gold: #f59e0b;
+      --cream: #fffbeb;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at top, #fff1f2 0%, #ffe4e6 45%, #fecdd3 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1, .font-fredoka {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    .font-pacifico {
+      font-family: 'Pacifico', cursive;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 25px 50px -12px rgba(190, 18, 60, 0.18), 0 0 30px rgba(245, 158, 11, 0.15);
+    }
+
+    /* Falling Snowflakes & Floating Hearts */
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.9;
+      }
+      90% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(110vh) translateX(25px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(105vh) scale(0.7);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.6;
+      }
+      80% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-15vh) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    .snowflake {
+      position: fixed;
+      top: -10vh;
+      pointer-events: none;
+      z-index: 1;
+      animation: fall linear infinite;
+    }
+
+    .floating-heart {
+      position: fixed;
+      bottom: -10vh;
+      pointer-events: none;
+      z-index: 1;
+      animation: floatUp ease-in-out infinite;
+    }
+
+    /* Bear Mascot Animations */
+    @keyframes bearBob {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1.5deg); }
+    }
+
+    @keyframes bearShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px) rotate(-3deg); }
+      40% { transform: translateX(6px) rotate(3deg); }
+      60% { transform: translateX(-4px) rotate(-2deg); }
+      80% { transform: translateX(4px) rotate(2deg); }
+    }
+
+    @keyframes bearJump {
+      0%, 100% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-16px) scale(1.06); }
+      60% { transform: translateY(-12px) scale(1.04); }
+    }
+
+    .bear-idle {
+      animation: bearBob 2.8s ease-in-out infinite;
+    }
+
+    .bear-sad {
+      animation: bearShake 0.45s ease-in-out;
+    }
+
+    .bear-happy {
+      animation: bearJump 0.9s ease-in-out infinite;
+    }
+
+    /* Glowing Pulse for Yes Button */
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 10px 25px -5px rgba(225, 29, 72, 0.5), 0 0 15px rgba(251, 191, 36, 0.4);
+      }
+      50% {
+        box-shadow: 0 14px 32px -3px rgba(225, 29, 72, 0.75), 0 0 28px rgba(251, 191, 36, 0.75);
+      }
+    }
+
+    .yes-btn-glow {
+      animation: pulseGlow 2s infinite;
+    }
+
+    /* Fairy Lights Top Border */
+    .fairy-light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: twinkle 1.6s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.35; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4 sm:p-6 relative">
+
+  <!-- Decorative Holiday Fairy Lights at Top -->
+  <div id="fairy-lights" class="fixed top-0 left-0 w-full flex justify-around items-center py-2 px-4 z-10 pointer-events-none"></div>
+
+  <!-- Background Snowflakes & Floating Hearts Container -->
+  <div id="particles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+  <!-- Sound Toggle Badge (Top Right) -->
+  <button id="sound-toggle" aria-label="Toggle Sound" class="fixed top-4 right-4 z-30 bg-white/80 hover:bg-white text-rose-600 p-2.5 rounded-full shadow-md border border-rose-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold">
+    <span id="sound-icon">🔊</span>
+    <span class="hidden sm:inline" id="sound-label">May Sound</span>
+  </button>
+
+  <!-- Main Confession Card -->
+  <main id="main-card" class="glass-card relative z-20 w-full max-w-md sm:max-w-lg rounded-3xl p-6 sm:p-10 text-center transition-all duration-500 my-auto">
+    
+    <!-- Festive Ribbon Header -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-rose-100 via-amber-100 to-rose-100 border border-amber-300/70 text-rose-700 text-xs sm:text-sm font-bold mb-4 shadow-sm">
+      <span>🎄</span>
+      <span>Para sa'yo lang 'to</span>
+      <span>✨</span>
+    </div>
+
+    <!-- Cute Reactive Holiday Bear SVG Mascot -->
+    <div id="mascot-wrapper" class="w-40 h-40 sm:w-44 sm:h-44 mx-auto mb-3 bear-idle relative flex items-center justify-center">
+      <!-- Floating status bubble above bear -->
+      <div id="bear-thought" class="absolute -top-2 -right-2 bg-white text-rose-600 text-xs font-bold px-3 py-1 rounded-2xl shadow-md border border-rose-100 transform rotate-6 transition-all duration-300">
+        Sana mag-yes ka 🥺
+      </div>
+
+      <svg id="holiday-bear" viewBox="0 0 220 220" class="w-full h-full drop-shadow-md">
+        <!-- Soft Aura behind Bear -->
+        <circle cx="110" cy="115" r="82" fill="#ffe4e6" opacity="0.7" />
+        
+        <!-- Left & Right Ears -->
+        <circle cx="66" cy="68" r="22" fill="#b4693e" />
+        <circle cx="66" cy="68" r="12" fill="#f3c6a5" />
+        <circle cx="154" cy="68" r="22" fill="#b4693e" />
+        <circle cx="154" cy="68" r="12" fill="#f3c6a5" />
+
+        <!-- Bear Head -->
+        <ellipse cx="110" cy="105" rx="56" ry="48" fill="#c87a4b" />
+
+        <!-- Santa Hat -->
+        <path d="M62 72 Q105 18 162 66 Q175 78 182 95 Q166 96 158 84 Q112 56 62 72 Z" fill="#e11d48" />
+        <!-- Santa Hat Pom-Pom -->
+        <circle cx="183" cy="96" r="11" fill="#ffffff" />
+        <!-- Santa Hat Fluffy Trim -->
+        <rect x="56" y="64" width="108" height="16" rx="8" fill="#ffffff" />
+
+        <!-- Muzzle -->
+        <ellipse cx="110" cy="118" rx="24" ry="18" fill="#fde6d5" />
+        <!-- Nose -->
+        <ellipse cx="110" cy="111" rx="7" ry="5" fill="#4a2511" />
+
+        <!-- Blush Cheeks -->
+        <ellipse id="blush-left" cx="76" cy="114" rx="10" ry="6" fill="#fb7185" opacity="0.65" />
+        <ellipse id="blush-right" cx="144" cy="114" rx="10" ry="6" fill="#fb7185" opacity="0.65" />
+
+        <!-- Dynamic Eyes Group -->
+        <g id="eyes-hopeful">
+          <circle cx="86" cy="96" r="6" fill="#2d160c" />
+          <circle cx="88" cy="94" r="2.2" fill="#ffffff" />
+          <circle cx="134" cy="96" r="6" fill="#2d160c" />
+          <circle cx="136" cy="94" r="2.2" fill="#ffffff" />
+        </g>
+
+        <g id="eyes-sad" class="hidden">
+          <!-- Pleading watery eyes -->
+          <circle cx="86" cy="98" r="6.5" fill="#2d160c" />
+          <circle cx="84" cy="96" r="2.5" fill="#ffffff" />
+          <circle cx="88" cy="100" r="1.5" fill="#ffffff" />
+          <circle cx="134" cy="98" r="6.5" fill="#2d160c" />
+          <circle cx="132" cy="96" r="2.5" fill="#ffffff" />
+          <circle cx="136" cy="100" r="1.5" fill="#ffffff" />
+          <!-- Sad eyebrows -->
+          <path d="M76 87 L92 91" stroke="#4a2511" stroke-width="3" stroke-linecap="round" />
+          <path d="M144 87 L128 91" stroke="#4a2511" stroke-width="3" stroke-linecap="round" />
+          <!-- Little teardrops -->
+          <path d="M74 104 Q71 112 74 115 Q77 112 74 104 Z" fill="#60a5fa" />
+          <path d="M146 104 Q143 112 146 115 Q149 112 146 104 Z" fill="#60a5fa" />
+        </g>
+
+        <g id="eyes-happy" class="hidden">
+          <!-- Happy curved eyes -->
+          <path d="M78 98 Q86 88 94 98" stroke="#2d160c" stroke-width="3.5" fill="none" stroke-linecap="round" />
+          <path d="M126 98 Q134 88 142 98" stroke="#2d160c" stroke-width="3.5" fill="none" stroke-linecap="round" />
+        </g>
+
+        <!-- Dynamic Mouth Group -->
+        <path id="mouth-hopeful" d="M103 123 Q110 130 117 123" stroke="#4a2511" stroke-width="3" fill="none" stroke-linecap="round" />
+        <path id="mouth-sad" class="hidden" d="M102 128 Q110 120 118 128" stroke="#4a2511" stroke-width="3" fill="none" stroke-linecap="round" />
+        <path id="mouth-happy" class="hidden" d="M100 121 Q110 136 120 121 Z" fill="#e11d48" stroke="#4a2511" stroke-width="2" />
+
+        <!-- Bear Body & Paws holding a Gift/Heart -->
+        <path d="M68 152 Q110 142 152 152 L160 198 Q110 206 60 198 Z" fill="#c87a4b" />
+        
+        <!-- Festive Red Scarf -->
+        <path d="M72 146 Q110 158 148 146 L152 158 Q110 170 68 158 Z" fill="#e11d48" />
+        <path d="M126 154 L136 184 L122 186 L116 156 Z" fill="#be123c" />
+
+        <!-- Big Heart Held in Paws -->
+        <g id="held-heart" transform="translate(110, 174)">
+          <path d="M0 14 C-22 -4 -26 -20 -12 -26 C-4 -29 0 -21 0 -17 C0 -21 4 -29 12 -26 C26 -20 22 -4 0 14 Z" fill="#f43f5e" stroke="#ffffff" stroke-width="2" />
+        </g>
+
+        <!-- Bear Paws -->
+        <circle cx="84" cy="172" r="13" fill="#b4693e" />
+        <circle cx="136" cy="172" r="13" fill="#b4693e" />
+      </svg>
+    </div>
+
+    <!-- QUESTION VIEW -->
+    <div id="question-view" class="transition-all duration-500">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-rose-800 leading-snug mb-3 tracking-tight">
+        Will you be my boyfriend para makahabol pa tayo sa Pasko? <span class="inline-block text-rose-600 font-pacifico">:&gt;</span>
+      </h1>
+
+      <p id="sub-plea" class="text-rose-600/90 text-sm sm:text-base font-semibold mb-7 min-h-[1.5rem] transition-all duration-300">
+        Para naman date tayo bago mag pasko basta sagot mo hihi ✨
+      </p>
+
+      <!-- Interactive Buttons Arena -->
+      <div id="buttons-container" class="flex flex-wrap items-center justify-center gap-4 min-h-[120px] py-3 relative">
+        <!-- YES BUTTON -->
+        <button id="yes-btn" type="button" class="yes-btn-glow bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 hover:from-rose-500 hover:to-pink-500 text-white font-fredoka font-bold rounded-2xl px-7 py-3.5 text-lg sm:text-xl shadow-lg border-2 border-amber-200/80 transition-all duration-300 ease-out cursor-pointer active:scale-95 z-10 flex items-center justify-center gap-2">
+          <span>Yes 💖</span>
+        </button>
+
+        <!-- NO BUTTON -->
+        <button id="no-btn" type="button" class="bg-white/95 hover:bg-rose-50 text-rose-700 font-fredoka font-semibold rounded-2xl px-6 py-3 text-base sm:text-lg shadow-md border-2 border-rose-200 transition-all duration-300 ease-out cursor-pointer active:scale-90 whitespace-nowrap z-20 relative">
+          No 😢
+        </button>
+      </div>
+    </div>
+
+    <!-- CELEBRATION VIEW (Hidden Initially - Pure, Heartfelt & Zero Extra Buttons) -->
+    <div id="celebration-view" class="hidden opacity-0 transform scale-95 transition-all duration-700">
+      <div class="inline-block px-4 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs tracking-wide mb-3 border border-amber-300">
+        🎉 Best Christmas Gift Ever 🎉
+      </div>
+
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-rose-700 leading-tight mb-4">
+        YAY!! Official na tayo ngayong Pasko! 🎄❤️✨
+      </h2>
+
+      <div class="bg-gradient-to-br from-rose-50/90 to-amber-50/90 border border-rose-200/80 rounded-2xl p-5 sm:p-6 shadow-inner">
+        <p class="text-rose-900 text-sm sm:text-base font-semibold leading-relaxed mb-3">
+          Grabe, nakahabol pa talaga tayo! 😭💖 Salamat kasi pinili mo rin ako. Sobrang excited na akong mag-Simbang Gabi, mag-foodtrip, at mag-Noche Buena na kasama ka. Merry Christmas sa atin, love! 🥰🎁
+        </p>
+        <div class="pt-3 border-t border-rose-200/60 flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-rose-600">
+          <span>📅 Official na tayo simula:</span>
+          <span id="official-date" class="bg-white px-3 py-1 rounded-lg border border-rose-200 shadow-xs text-rose-700"></span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Subtle Footer -->
+  <footer class="relative z-10 mt-6 text-center text-rose-700/70 text-xs font-semibold">
+    Ginawa ko 'to para sa'yo • Merry Christmas! 💖
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. WEB AUDIO API SOUND SYNTHESIZER
+    // ==========================================
+    class HolidayAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        return this.muted;
+      }
+
+      // Cute descending "boing" sound when "No" is clicked
+      playNoShrink(step) {
+        if (this.muted) return;
+        try {
+          this.initContext();
+          if (!this.ctx) return;
+
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          const baseFreq = Math.max(180, 380 - step * 25);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(baseFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.55, now + 0.18);
+
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } catch (e) {
+          // Ignore audio errors on restricted devices
+        }
+      }
+
+      // Warm, sparkly festive chime arpeggio when "Yes" is clicked
+      playYesCelebration() {
+        if (this.muted) return;
+        try {
+          this.initContext();
+          if (!this.ctx) return;
+
+          const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]; // C5 E5 G5 C6 E6 G6
+          notes.forEach((freq, idx) => {
+            const startTime = this.ctx.currentTime + idx * 0.085;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = idx % 2 === 0 ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+
+            gain.gain.setValueAtTime(0.001, startTime);
+            gain.gain.linearRampToValueAtTime(0.25, startTime + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0008, startTime + 0.85);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(startTime);
+            osc.stop(startTime + 0.9);
+          });
+        } catch (e) {
+          // Ignore audio errors
+        }
+      }
+    }
+
+    const audioEngine = new HolidayAudioEngine();
+
+    // ==========================================
+    // 2. AMBIENT FAIRY LIGHTS, SNOW & HEARTS
+    // ==========================================
+    function createAmbientParticles() {
+      const lightsContainer = document.getElementById('fairy-lights');
+      const lightColors = ['#f43f5e', '#fbbf24', '#34d399', '#60a5fa', '#fb7185'];
+      const lightCount = window.innerWidth < 640 ? 12 : 22;
+
+      for (let i = 0; i < lightCount; i++) {
+        const dot = document.createElement('div');
+        const color = lightColors[i % lightColors.length];
+        dot.className = 'fairy-light';
+        dot.style.backgroundColor = color;
+        dot.style.boxShadow = `0 0 10px ${color}, 0 0 18px ${color}`;
+        dot.style.animationDelay = `${(i * 0.25) % 2}s`;
+        lightsContainer.appendChild(dot);
+      }
+
+      const container = document.getElementById('particles-container');
+      const symbols = ['❄️', '✨', '💖', '❅', '💕'];
+      const total = window.innerWidth < 640 ? 18 : 30;
+
+      for (let i = 0; i < total; i++) {
+        const el = document.createElement('span');
+        const isHeart = i % 3 === 0;
+        el.textContent = isHeart ? symbols[2] : symbols[i % symbols.length];
+        el.className = isHeart ? 'floating-heart' : 'snowflake';
+        el.style.left = `${Math.random() * 100}vw`;
+        el.style.fontSize = `${Math.random() * 12 + 12}px`;
+        el.style.animationDuration = `${Math.random() * 7 + 7}s`;
+        el.style.animationDelay = `${Math.random() * 6}s`;
+        container.appendChild(el);
+      }
+    }
+
+    // ==========================================
+    // 3. MASCOT & INTERACTIVE BUTTON LOGIC
+    // ==========================================
+    const yesBtn = document.getElementById('yes-btn');
+    const noBtn = document.getElementById('no-btn');
+    const subPlea = document.getElementById('sub-plea');
+    const bearThought = document.getElementById('bear-thought');
+    const mascotWrapper = document.getElementById('mascot-wrapper');
+
+    const eyesHopeful = document.getElementById('eyes-hopeful');
+    const eyesSad = document.getElementById('eyes-sad');
+    const eyesHappy = document.getElementById('eyes-happy');
+    const mouthHopeful = document.getElementById('mouth-hopeful');
+    const mouthSad = document.getElementById('mouth-sad');
+    const mouthHappy = document.getElementById('mouth-happy');
+
+    function setMascotMood(mood) {
+      eyesHopeful.classList.add('hidden');
+      eyesSad.classList.add('hidden');
+      eyesHappy.classList.add('hidden');
+      mouthHopeful.classList.add('hidden');
+      mouthSad.classList.add('hidden');
+      mouthHappy.classList.add('hidden');
+
+      mascotWrapper.classList.remove('bear-idle', 'bear-sad', 'bear-happy');
+      void mascotWrapper.offsetWidth; // Force reflow for re-triggering animation
+
+      if (mood === 'sad') {
+        eyesSad.classList.remove('hidden');
+        mouthSad.classList.remove('hidden');
+        mascotWrapper.classList.add('bear-sad');
+      } else if (mood === 'happy') {
+        eyesHappy.classList.remove('hidden');
+        mouthHappy.classList.remove('hidden');
+        mascotWrapper.classList.add('bear-happy');
+      } else {
+        eyesHopeful.classList.remove('hidden');
+        mouthHopeful.classList.remove('hidden');
+        mascotWrapper.classList.add('bear-idle');
+      }
+    }
+
+    // Sequence of funny & natural Taglish pleas as "No" shrinks
+    const noSteps = [
+      {
+        btnText: "Sure ka na ba? 🥺",
+        plea: "Hala, pag-isipan mo muna... malapit na mag-Pasko oh! 🎄",
+        thought: "Hala?! 😭"
+      },
+      {
+        btnText: "Hala sige na oh 🥺",
+        plea: "Gusto mo bang malamig ang Pasko natin? Sige na please! ❄️",
+        thought: "Please? 🥺"
+      },
+      {
+        btnText: "Malapit na mag-Pasko...",
+        plea: "Date tayo bago mag pasko basta sagot mo! Sulit na sulit 'yan 😋✨",
+        thought: "Wag naman! 💔"
+      },
+      {
+        btnText: "Bawal na mag-No!",
+        plea: "Tignan mo yung Yes button oh, naggo-glow na para sa'yo! 💖",
+        thought: "Iiyak na ko 😢"
+      },
+      {
+        btnText: "Sige na pleaseee 🙏",
+        plea: "Konting pindot na lang sa Yes, official na tayo! 🎁",
+        thought: "Sige naaa 🙏"
+      },
+      {
+        btnText: "Wala ka nang choice hihi",
+        plea: "Tinadhana na talaga tayo ngayong Pasko, pindutin mo na yung Yes! 🎅💘",
+        thought: "Yes na yan! ✨"
+      }
+    ];
+
+    let noClickCount = 0;
+    const maxNoClicks = 7; // Disappears completely on the 7th tap/click
+
+    function handleNoAction(e) {
+      if (e) e.preventDefault();
+      if (noClickCount >= maxNoClicks) return;
+
+      noClickCount++;
+      audioEngine.playNoShrink(noClickCount);
+      setMascotMood('sad');
+
+      // Grow the "Yes" button smoothly using font-size and padding so layout wraps cleanly without overlapping "No"
+      const currentFontSize = 1.15 + noClickCount * 0.22; // rem
+      const currentPadX = 1.75 + noClickCount * 0.35; // rem
+      const currentPadY = 0.85 + noClickCount * 0.18; // rem
+
+      yesBtn.style.fontSize = `${Math.min(currentFontSize, 2.7)}rem`;
+      yesBtn.style.padding = `${Math.min(currentPadY, 2.0)}rem ${Math.min(currentPadX, 4.0)}rem`;
+
+      if (noClickCount >= maxNoClicks) {
+        // Shrink "No" completely and hide it
+        noBtn.style.transform = 'scale(0)';
+        noBtn.style.opacity = '0';
+        noBtn.style.pointerEvents = 'none';
+        subPlea.textContent = "Oops, nawala na yung 'No'! Mukhang 'Yes' na talaga ang sagot mo hihi 🥰🎄";
+        bearThought.textContent = "Yes na! 💖";
+
+        setTimeout(() => {
+          noBtn.classList.add('hidden');
+        }, 300);
+        return;
+      }
+
+      // Shrink "No" button smoothly while keeping it easy to tap until it vanishes
+      const noScale = Math.max(0.32, 1 - noClickCount * 0.11);
+      noBtn.style.transform = `scale(${noScale})`;
+      noBtn.style.opacity = `${Math.max(0.45, 1 - noClickCount * 0.08)}`;
+
+      // Update Taglish texts
+      const stepData = noSteps[Math.min(noClickCount - 1, noSteps.length - 1)];
+      noBtn.textContent = stepData.btnText;
+      subPlea.textContent = stepData.plea;
+      bearThought.textContent = stepData.thought;
+    }
+
+    noBtn.addEventListener('click', handleNoAction);
+
+    // ==========================================
+    // 4. CONFETTI & "YES" CELEBRATION
+    // ==========================================
+    function launchCelebrationConfetti() {
+      if (typeof confetti !== 'function') return;
+
+      const colors = ['#e11d48', '#fbbf24', '#ffffff', '#fb7185', '#34d399'];
+
+      confetti({
+        particleCount: 90,
+        spread: 75,
+        origin: { y: 0.6 },
+        colors: colors
+      });
+
+      const end = Date.now() + 2600;
+      (function frame() {
+        confetti({
+          particleCount: 4,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 4,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+
+    yesBtn.addEventListener('click', () => {
+      audioEngine.playYesCelebration();
+      setMascotMood('happy');
+      bearThought.textContent = "YAY!! ❤️🎉";
+      launchCelebrationConfetti();
+
+      const today = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('official-date').textContent = today.toLocaleDateString('en-US', options);
+
+      const questionView = document.getElementById('question-view');
+      const celebrationView = document.getElementById('celebration-view');
+
+      questionView.style.opacity = '0';
+      questionView.style.transform = 'scale(0.95)';
+
+      setTimeout(() => {
+        questionView.classList.add('hidden');
+        celebrationView.classList.remove('hidden');
+
+        requestAnimationFrame(() => {
+          celebrationView.classList.remove('opacity-0', 'scale-95');
+          celebrationView.classList.add('opacity-100', 'scale-100');
+        });
+      }, 300);
+    });
+
+    // Sound Mute/Unmute Toggle
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundIcon = document.getElementById('sound-icon');
+    const soundLabel = document.getElementById('sound-label');
+
+    soundToggle.addEventListener('click', () => {
+      const isMuted = audioEngine.toggleMute();
+      soundIcon.textContent = isMuted ? '🔇' : '🔊';
+      soundLabel.textContent = isMuted ? 'Naka-mute' : 'May Sound';
+    });
+
+    window.addEventListener('DOMContentLoaded', createAmbientParticles);
+  </script>
+</body>
+</html>
